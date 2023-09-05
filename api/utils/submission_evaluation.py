@@ -13,12 +13,27 @@ def test_submission_script(inputs, code, number_of_testcases, time_limit):
         time_limit = MAX_TIME_LIMIT
     folder_path = create_temporary_directory()
     random_name = secrets.token_hex(16)
-    file_path = f"{folder_path}/{random_name}.cpp"
+    language = "python"
+    if language == "python":
+        file_extension = "py"
+        execute_command = f"python {folder_path}/{random_name}.py"
+    elif language == "cpp":
+        file_extension = "cpp"
+        compile_command = f"g++ {folder_path}/{random_name}.cpp -o {folder_path}/{random_name}.exe"
+        execute_command = f"{folder_path}/{random_name}.exe"
+    elif language == "java":
+        file_extension = "java"
+        random_name = "Main"
+        compile_command = f"javac {folder_path}/{random_name}.java"
+        execute_command = f"java -classpath {folder_path} {random_name}"
+    else:
+        return ["Language not supported!"]
+    file_path = f"{folder_path}/{random_name}.{file_extension}"
     write_to_file(file_path, code)
     try:
-        compile_program = f"g++ {file_path} -o {folder_path}/{random_name}.exe"
-        subprocess.run(compile_program, shell=True, check=True)
-        results = run_tests(number_of_testcases, file_path, inputs, time_limit, folder_path, random_name)
+        if language == "cpp" or language == "java":
+            subprocess.run(compile_command, shell=True, check=True)
+        results = run_tests(number_of_testcases, execute_command, inputs, time_limit, folder_path, random_name)
     except subprocess.CalledProcessError as e:
         results = ['Failed Compilation!']
     remove_directory(folder_path)
@@ -40,14 +55,14 @@ def remove_directory(path):
     except:
         pass
 
-def run_tests(number_of_testcases, file_path, inputs, time_limit, folder_path, random_name):
+def run_tests(number_of_testcases, execute_command, inputs, time_limit, folder_path, random_name):
     results = []
     for act_test in range(number_of_testcases):
-        write_to_file(file_path, inputs[act_test])
+        write_to_file(f"{folder_path}/input.txt", inputs[act_test])
         try:
-            execute_program = f"timeout {time_limit} {folder_path}/{random_name}.exe < {file_path} > {folder_path}/{random_name}.out"
+            execute_program = f"timeout {time_limit} {execute_command} < {folder_path}/input.txt > {folder_path}/output.txt"
             subprocess.run(execute_program, shell=True, check=True)
-            with open(f"{folder_path}/{random_name}.out", 'r') as output_file:
+            with open(f"{folder_path}/output.txt", 'r') as output_file:
                 program_output = output_file.read().strip()
                 results.append(program_output)
         except subprocess.CalledProcessError as e:
@@ -58,5 +73,5 @@ def run_tests(number_of_testcases, file_path, inputs, time_limit, folder_path, r
     return results
 
 def write_to_file(path, text):
-    with open(path, 'wb') as file:
-        file.write(text.encode('utf-8'))
+    with open(path, 'w') as file:
+        file.write(text)
