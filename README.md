@@ -11,5 +11,3 @@ The Code Execution API is designed to securely execute user-submitted code withi
 - Allows users to specify a time limit for execution in their chosen programming language.
 - Provides results as a list, indicating code output and time limit compliance for each test case.
 - Maximum time limit is set to 15 seconds for security reasons.
-
-Enjoy comprehensive testing and secure code execution with our versatile API.
