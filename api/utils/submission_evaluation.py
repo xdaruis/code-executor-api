@@ -4,19 +4,23 @@ import tempfile
 import secrets
 import shutil
 import stat
+import ast
 
 RETURN_CODE_TIMEOUT = 124
 MAX_TIME_LIMIT = 15
 
-def test_submission_script(inputs, code, number_of_testcases, time_limit):
+def test_submission_script(language, inputs, code, number_of_testcases, time_limit):
     if time_limit > MAX_TIME_LIMIT:
         time_limit = MAX_TIME_LIMIT
     folder_path = create_temporary_directory()
     random_name = secrets.token_hex(16)
-    language = "python"
     if language == "python":
         file_extension = "py"
         execute_command = f"python {folder_path}/{random_name}.py"
+        try:
+            ast.parse(code)
+        except SyntaxError as se:
+            return ['Failed Compilation!']
     elif language == "cpp":
         file_extension = "cpp"
         compile_command = f"g++ {folder_path}/{random_name}.cpp -o {folder_path}/{random_name}.exe"
