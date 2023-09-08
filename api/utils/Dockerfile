@@ -1,3 +1,4 @@
+#docker build -t docker-safe-env .
 FROM python:latest
 
 WORKDIR /usr/src/app
