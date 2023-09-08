@@ -5,6 +5,7 @@ import secrets
 import shutil
 import stat
 import ast
+import os
 
 RETURN_CODE_TIMEOUT = 124
 MAX_TIME_LIMIT = 15
@@ -73,9 +74,29 @@ def run_tests(number_of_testcases, execute_command, inputs, time_limit, folder_p
             if e.returncode == RETURN_CODE_TIMEOUT:
                 results.append(f"{act_test + 1}.Time Limit Exceeded")
             else:
-                results.append("Internal Server Error!")
+                results.append(f"Internal Server Error!")
     return results
 
 def write_to_file(path, text):
     with open(path, 'w') as file:
         file.write(text)
+
+if __name__ == "__main__":
+
+    language = os.environ.get('LANGUAGE', '')
+    code = os.environ.get('CODE', '')
+    number_of_testcases = os.environ.get('NUMBER_OF_TESTCASES', '')
+    time_limit = os.environ.get('TIME_LIMIT', '1')
+    inputs = os.environ.get('INPUTS')
+
+    # with open('/app/input.txt', 'r') as input_file:
+    #     inputs = input_file.read()
+
+    inputs = ast.literal_eval(inputs)
+    time_limit = int(time_limit)
+    number_of_testcases = int(number_of_testcases)
+
+    results = test_submission_script(language, inputs, code, number_of_testcases, time_limit)
+
+    for result in results:
+        print(result)
