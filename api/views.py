@@ -1,6 +1,7 @@
 import subprocess
 import tempfile
 import os
+import ast
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -26,7 +27,6 @@ def test_submission(request):
 
         command = [
             "docker", "run",
-            "--rm",
             "-e", f"INPUTS={inputs}",
             "-e", f"LANGUAGE={language}",
             "-e", f"CODE={code}",
@@ -35,7 +35,7 @@ def test_submission(request):
             "docker-safe-env"
         ]
         try:
-            output = subprocess.check_output(command, text=True).splitlines()
+            output = ast.literal_eval(subprocess.check_output(command, text=True))
             return Response({'results': output}, status=status.HTTP_200_OK)
         except subprocess.CalledProcessError as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

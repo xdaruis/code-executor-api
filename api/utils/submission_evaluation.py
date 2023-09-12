@@ -98,5 +98,4 @@ if __name__ == "__main__":
 
     results = test_submission_script(language, inputs, code, number_of_testcases, time_limit)
 
-    for result in results:
-        print(result)
+    print(results)
