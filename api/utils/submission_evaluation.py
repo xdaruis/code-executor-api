@@ -5,7 +5,6 @@ import secrets
 import shutil
 import stat
 import ast
-import os
 
 RETURN_CODE_TIMEOUT = 124
 MAX_TIME_LIMIT = 15
