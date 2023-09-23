@@ -87,10 +87,9 @@ if __name__ == "__main__":
     code = os.environ.get('CODE', '')
     number_of_testcases = os.environ.get('NUMBER_OF_TESTCASES', '')
     time_limit = os.environ.get('TIME_LIMIT', '1')
-    inputs = os.environ.get('INPUTS')
 
-    # with open('/app/input.txt', 'r') as input_file:
-    #     inputs = input_file.read()
+    with open('/app/input.txt', 'r') as input_file:
+        inputs = input_file.read()
 
     inputs = ast.literal_eval(inputs)
     time_limit = int(time_limit)

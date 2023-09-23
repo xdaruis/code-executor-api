@@ -17,17 +17,14 @@ def test_submission(request):
         time_limit = serializer.validated_data['time_limit']
         inputs = serializer.validated_data['inputs']
 
-
-        # NEED TO FIX DOCKER MOUNT FILES PERMISSIONS
-        # with tempfile.NamedTemporaryFile(delete=False, mode='w') as input_file:
-        #     input_file.write(str(inputs))
-        # input_file_path = os.path.join(tempfile.gettempdir(), input_file.name)
-        # os.chmod(input_file_path, 0o644)
-        # "-v", f"{input_file_path}:/app/input.txt",
+        with tempfile.NamedTemporaryFile(delete=False, mode='w') as input_file:
+            input_file.write(str(inputs))
+        input_file_path = os.path.join(tempfile.gettempdir(), input_file.name)
+        os.chmod(input_file_path, 0o644)
 
         command = [
             "docker", "run",
-            "-e", f"INPUTS={inputs}",
+            "-v", f"{input_file_path}:/app/input.txt:Z",
             "-e", f"LANGUAGE={language}",
             "-e", f"CODE={code}",
             "-e", f"NUMBER_OF_TESTCASES={number_of_testcases}",
@@ -36,6 +33,7 @@ def test_submission(request):
         ]
         try:
             output = ast.literal_eval(subprocess.check_output(command, text=True))
+            os.remove(input_file_path)
             return Response({'results': output}, status=status.HTTP_200_OK)
         except subprocess.CalledProcessError as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
