@@ -73,7 +73,7 @@ def run_tests(number_of_testcases, execute_command, inputs, time_limit, folder_p
             if e.returncode == RETURN_CODE_TIMEOUT:
                 results.append(f"{act_test + 1}.Time Limit Exceeded")
             else:
-                results.append(f"Internal Server Error!")
+                return ['Runtime Error']
     return results
 
 def write_to_file(path, text):
